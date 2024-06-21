@@ -12,11 +12,17 @@ public class Resource {
 
     private ResourceType type;
 
+    private int rentPrice;
+
+    private String description;
+
     private boolean isActive;
 
-    public Resource(ResourceType type) {
-        this.type = type;
+    public Resource(ResourceType type, int rentPrice, String description) {
+        this.id = idCounter++;
         this.isActive = true;
-        this.id  = idCounter++;
+        this.type = type;
+        this.rentPrice = rentPrice;
+        this.description = description;
     }
 }
