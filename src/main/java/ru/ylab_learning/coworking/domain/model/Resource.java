@@ -3,10 +3,13 @@ package ru.ylab_learning.coworking.domain.model;
 import lombok.Data;
 import ru.ylab_learning.coworking.domain.enums.ResourceType;
 
+/**
+ * Сущность ресурса
+ */
 @Data
 public class Resource {
 
-    private static long idCounter = 0;
+    private static long idCounter = 1L;
 
     private Long id;
 

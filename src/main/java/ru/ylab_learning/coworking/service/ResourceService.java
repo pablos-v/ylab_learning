@@ -1,5 +1,6 @@
 package ru.ylab_learning.coworking.service;
 
+import ru.ylab_learning.coworking.domain.dto.ResourceDTO;
 import ru.ylab_learning.coworking.domain.model.Resource;
 
 import java.util.List;
@@ -9,9 +10,13 @@ public interface ResourceService {
 
     Resource getById(Long id);
 
-    Resource createResource();
+    void createResource();
 
-    Resource updateResource();
+    Resource save(ResourceDTO resource);
 
-    Resource deleteResource();
+    void updateResource();
+
+    void deleteResource();
+
+    long getMaxId();
 }

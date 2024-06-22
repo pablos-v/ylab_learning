@@ -51,12 +51,14 @@ public enum InputType {
         }
     },
     /**
-     * Укажите ID:
+     * Укажите статус ресурса:
+     * 1 - активен
+     * 0 - неактивен
      */
     RESOURCE_STATUS(1){
         @Override
         public String toString() {
-            return "Укажите статус ресурса\n" +
+            return "Укажите статус ресурса:\n" +
                     "1 - активен" +
                     "0 - неактивен";
         }

@@ -9,19 +9,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
+/**
+ * Класс для работы с консольным потоком ввода
+ */
 @RequiredArgsConstructor
 public class ConsoleInput {
-    /**
-     * ограниечение количества вводимых символов
-     */
-//    private static final int MAX_SYMBOLS = 50;
     private static final Scanner scanner = new Scanner(System.in);
 
     /**
-     * ЛОгика ввода строк в консоль, в зависимости от типа вводных данных
+     * Метод ввода строк в консоль, с отображением вводных данных
      *
      * @param type тип вводных данных
-     * @return отвалидированный массив строк
+     * @return валидный массив строк
      */
     public static String[] stringsInput(InputType type) {
         while (true) {
@@ -40,12 +39,11 @@ public class ConsoleInput {
     }
 
     /**
-     * Циклично просит ввести число, сообщая message
-     * проверяет на соответствие максимальному порогу
+     * Метод ввода чисел в консоль, с отображением вводных данных
      *
-     * @param message   подставляемое сообщение
-     * @param maxNumber максимальный порог
-     * @return корректное введённое число int
+     * @param type тип вводных данных
+     * @param maxNumber для первичной валидации
+     * @return валидное число
      */
     public static Long intInput(InputType type, Long maxNumber) {
         while (true) {
@@ -63,9 +61,9 @@ public class ConsoleInput {
     }
 
     /**
-     * получает ввод даты, проверяет и приводит к формату LocalDate
+     * Метод ввода даты в консоль, проверяет и приводит к формату LocalDate
      *
-     * @return LocalDate date
+     * @return валидная дата
      */
     public static LocalDate dateInput() {
         while (true) {

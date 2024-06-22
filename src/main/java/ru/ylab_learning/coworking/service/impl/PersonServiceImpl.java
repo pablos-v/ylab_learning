@@ -1,23 +1,21 @@
 package ru.ylab_learning.coworking.service.impl;
 
-import lombok.Data;
+import ru.ylab_learning.coworking.domain.dto.PersonDTO;
 import ru.ylab_learning.coworking.domain.enums.InputType;
 import ru.ylab_learning.coworking.domain.exception.PersonExistsException;
+import ru.ylab_learning.coworking.domain.exception.PersonNotFoundException;
 import ru.ylab_learning.coworking.domain.exception.WrongEmailException;
 import ru.ylab_learning.coworking.domain.model.Person;
 import ru.ylab_learning.coworking.in.ConsoleInput;
 import ru.ylab_learning.coworking.out.ConsoleOutput;
 import ru.ylab_learning.coworking.repository.PersonRepository;
 import ru.ylab_learning.coworking.service.PersonService;
-import ru.ylab_learning.coworking.domain.exception.PersonNotFoundException;
 import ru.ylab_learning.coworking.util.Util;
 
 import java.util.List;
 
-@Data
-public class PersonServiceImpl implements PersonService {
+public record PersonServiceImpl(PersonRepository repository) implements PersonService {
 
-    private final PersonRepository repository;
     @Override
     public Person auth() {
         while (true) {
@@ -26,7 +24,7 @@ public class PersonServiceImpl implements PersonService {
                 String login = credentials[0];
                 String password = credentials[1];
                 Person person = repository.findByLogin(login).orElseThrow(PersonNotFoundException::new);
-                if ((person.getPassword().equals(password)))  {
+                if ((person.getPassword().equals(password))) {
                     return person;
                 }
                 ConsoleOutput.print("Пароль не подходит!");
@@ -40,28 +38,45 @@ public class PersonServiceImpl implements PersonService {
     public void createUser() {
         while (true) {
             String[] credentials = ConsoleInput.stringsInput(InputType.REGISTER);
+            PersonDTO newPerson = new PersonDTO(
+                    credentials[0],
+                    credentials[1],
+                    credentials[2],
+                    credentials[3]
+            );
             try {
-                if (repository.findByLogin(credentials[0]).isPresent())  {
+                if (repository.findByLogin(newPerson.getLogin()).isPresent()) {
                     throw new PersonExistsException();
                 }
-                if (!Util.emailMatchesPattern(credentials[3]))   {
+                if (!Util.emailMatchesPattern(newPerson.getEmail())) {
                     throw new WrongEmailException();
                 }
-                repository.save(new Person(credentials[0], credentials[1], credentials[2], credentials[3]));
-                ConsoleOutput.print("Добавлен пользователь " + credentials[2] +
-                        " с логином " + credentials[0] + "\n-------------------------\n");
+                Person savedPerson = save(newPerson);
+                ConsoleOutput.print("Добавлен пользователь " + savedPerson.getName() + " с логином " +
+                        savedPerson.getLogin() + " и ID " + savedPerson.getId() + "\n-------------------------\n");
                 return;
             } catch (PersonExistsException e) {
-                ConsoleOutput.print("Пользователь с логином " + credentials[0] + " уже существует! \nПопробуйте снова.");
-            } catch (WrongEmailException e)  {
+                ConsoleOutput.print("Пользователь с логином " + newPerson.getLogin() +
+                        " уже существует! \nПопробуйте снова.");
+            } catch (WrongEmailException e) {
                 ConsoleOutput.print("Неправильный email. Попробуйте снова.");
             }
         }
     }
 
     @Override
+    public Person save(PersonDTO person) {
+        return repository.save(person);
+    }
+
+    @Override
     public List<Person> getAllPersons() {
         return repository.findAll();
+    }
+
+    @Override
+    public Long getMaxId() {
+        return getAllPersons().stream().mapToLong(Person::getId).max().orElseThrow(PersonNotFoundException::new);
     }
 
     @Override

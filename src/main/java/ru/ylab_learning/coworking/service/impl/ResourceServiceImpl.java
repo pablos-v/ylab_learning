@@ -1,12 +1,8 @@
 package ru.ylab_learning.coworking.service.impl;
 
-import lombok.Data;
-import ru.ylab_learning.coworking.domain.dto.BookingDTO;
 import ru.ylab_learning.coworking.domain.dto.ResourceDTO;
 import ru.ylab_learning.coworking.domain.enums.InputType;
 import ru.ylab_learning.coworking.domain.enums.ResourceType;
-import ru.ylab_learning.coworking.domain.exception.BookingNotFoundException;
-import ru.ylab_learning.coworking.domain.exception.PersonNotFoundException;
 import ru.ylab_learning.coworking.domain.exception.ResourceNotFoundException;
 import ru.ylab_learning.coworking.domain.exception.ResourceTypeNotFoundException;
 import ru.ylab_learning.coworking.domain.model.Resource;
@@ -14,22 +10,15 @@ import ru.ylab_learning.coworking.in.ConsoleInput;
 import ru.ylab_learning.coworking.out.ConsoleOutput;
 import ru.ylab_learning.coworking.repository.ResourceRepository;
 import ru.ylab_learning.coworking.service.ResourceService;
-import ru.ylab_learning.coworking.util.Util;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-@Data
-public class ResourceServiceImpl implements ResourceService {
-
-    private final ResourceRepository resourceRepository;
+public record ResourceServiceImpl(ResourceRepository resourceRepository) implements ResourceService {
 
     @Override
     public List<Resource> getAllResources() {
-        return null;
+        return resourceRepository.findAll();
     }
 
     @Override
@@ -38,29 +27,49 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Resource createResource() {
+    public void createResource() {
         ResourceDTO resource = askAndValidate();
-        return save(resource);
-
+        ConsoleOutput.print("Добавлен ресурс: " + save(resource));
     }
 
     @Override
-    public Resource updateResource() {
-        Long maxId =
-                getAllResources().stream().mapToLong(Resource::getId).max().orElseThrow(ResourceNotFoundException::new);
-        Resource original = getById(ConsoleInput.intInput(InputType.ID, maxId));
-        boolean status = ConsoleInput.intInput(InputType.RESOURCE_STATUS, 1L) == 1;
-        ResourceDTO updated = askAndValidate();
-        original.setType(updated.getType());
-        original.setDescription(updated.getDescription());
-        original.setRentPrice(updated.getRentPrice());
-        original.setActive(status);
-        return put(original);
+    public Resource save(ResourceDTO resource) {
+        return resourceRepository.save(resource);
     }
 
     @Override
-    public Resource deleteResource() {
-        return null;
+    public void updateResource() {
+        try {
+            long maxId = getMaxId();
+            Resource original = getById(ConsoleInput.intInput(InputType.ID, maxId));
+            boolean status = ConsoleInput.intInput(InputType.RESOURCE_STATUS, 1L) == 1;
+            ResourceDTO updated = askAndValidate();
+            original.setType(updated.getType());
+            original.setDescription(updated.getDescription());
+            original.setRentPrice(updated.getRentPrice());
+            original.setActive(status);
+            resourceRepository.update(original);
+            ConsoleOutput.print("Изменен ресурс: " + original);
+        } catch (ResourceNotFoundException e) {
+            ConsoleOutput.print("Нет ресурсов.");
+        }
+    }
+
+    @Override
+    public void deleteResource() {
+        try {
+            long maxId = getMaxId();
+            Long idRequired = ConsoleInput.intInput(InputType.ID, maxId);
+            Resource deleted = resourceRepository.deleteById(idRequired).orElseThrow(ResourceNotFoundException::new);
+            ConsoleOutput.print("Удален ресурс: " + deleted);
+        } catch (ResourceNotFoundException e) {
+            ConsoleOutput.print("Нет ресурсов.");
+        }
+    }
+
+    @Override
+    public long getMaxId() {
+        return getAllResources().stream().mapToLong(Resource::getId).max().orElseThrow(ResourceNotFoundException::new);
     }
 
     private ResourceDTO askAndValidate() {
@@ -68,7 +77,6 @@ public class ResourceServiceImpl implements ResourceService {
         while (true) {
             String[] input = ConsoleInput.stringsInput(InputType.RESOURCE);
             try {
-                // парсим
                 if (input[0].equals("place") || input[0].equals("room")) {
                     resource.setType(input[0].equals("place") ? ResourceType.WORKPLACE : ResourceType.MEETING_ROOM);
                 } else {

@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+/**
+ * ДТО бронирования
+ */
 @Data
 public class BookingDTO {
     private Long resourceId;

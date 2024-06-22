@@ -5,6 +5,7 @@ import ru.ylab_learning.coworking.domain.enums.InputType;
 import ru.ylab_learning.coworking.domain.enums.MenuValues;
 import ru.ylab_learning.coworking.domain.model.Booking;
 import ru.ylab_learning.coworking.domain.model.Person;
+import ru.ylab_learning.coworking.domain.model.Resource;
 import ru.ylab_learning.coworking.in.ConsoleInput;
 import ru.ylab_learning.coworking.out.ConsoleOutput;
 
@@ -37,17 +38,20 @@ public class Util {
         // Отправляем уведомление
     }
 
-    public static List<Slot> getAvailableSlots(LocalDate date, List<Booking> bookings) {
+    public static List<Slot> getAvailableSlots(List<Resource> resources, LocalDate date, List<Booking> bookings) {
         List<Slot> availableSlots = new ArrayList<>();
 
-        // Перебираем все часы с 00:00 до 24:00
-        for (int hour = 0; hour < 24; hour++) {
-            LocalTime startTime = LocalTime.of(hour, 0);
-            LocalTime endTime = LocalTime.of(hour + 1, 0);
+        for (Resource resource : resources) {
+            // Перебираем все часы с 00:00 до 24:00
+            for (int hour = 0; hour < 24; hour++) {
+                LocalTime startTime = LocalTime.of(hour, 0);
+                int correctCounter = hour == 23 ? 0 : (hour + 1);
+                LocalTime endTime = LocalTime.of(correctCounter, 0);
 
-            // Проверяем, не пересекается ли текущий слот с занятыми слотами
-            if (!hasConflicts(date, bookings, startTime, endTime)) {
-                availableSlots.add(new Slot(startTime, endTime));
+                // Проверяем, не пересекается ли текущий слот с занятыми слотами
+                if (!hasConflicts(date, bookings, startTime, endTime)) {
+                    availableSlots.add(new Slot(resource.getId(), resource.getType(), resource.getDescription(), startTime, endTime));
+                }
             }
         }
         return availableSlots;
@@ -63,5 +67,37 @@ public class Util {
                         && (!booking.getEndTime().isAfter(endTime))); // и до окончания нашего
     }
 
+    public static void filterBookingsByDate(List<Booking> allBookings) {
+        LocalDate dateRequired = ConsoleInput.dateInput();
+        List<Booking> filteredBookings = allBookings.stream()
+                .filter(booking -> booking.getDate().equals(dateRequired)).toList();
+        if (filteredBookings.isEmpty()) {
+            ConsoleOutput.print("Нет бронирований на дату: " + dateRequired);
+        } else {
+            ConsoleOutput.print("Все бронирования на дату: " + dateRequired);
+            ConsoleOutput.printList(filteredBookings);
+        }
+    }
+    public static void filterBookingsByPerson(List<Booking> allBookings, Long maxId) {
+        Long idRequired = ConsoleInput.intInput(InputType.ID, maxId);
+        List<Booking> filteredBookings = allBookings.stream().filter(booking -> booking.getPersonId().equals(idRequired)).toList();
+        if (filteredBookings.isEmpty()) {
+            ConsoleOutput.print("Нет бронирований для пользователя с ID: " + idRequired);
+        } else {
+            ConsoleOutput.print("Все бронирования для пользователя с ID: " + idRequired);
+            ConsoleOutput.printList(filteredBookings);
+        }
+    }
+
+    public static void filterBookingsByResource(List<Booking> allBookings, Long maxId) {
+        Long idRequired = ConsoleInput.intInput(InputType.ID, maxId);
+        List<Booking> filteredBookings = allBookings.stream().filter(booking -> booking.getResourceId().equals(idRequired)).toList();
+        if (filteredBookings.isEmpty()) {
+            ConsoleOutput.print("Нет бронирований для ресурса с ID: " + idRequired);
+        } else {
+            ConsoleOutput.print("Все бронирования для ресурса с ID: " + idRequired);
+            ConsoleOutput.printList(filteredBookings);
+        }
+    }
 
 }

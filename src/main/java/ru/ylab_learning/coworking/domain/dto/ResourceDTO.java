@@ -3,10 +3,11 @@ package ru.ylab_learning.coworking.domain.dto;
 import lombok.Data;
 import ru.ylab_learning.coworking.domain.enums.ResourceType;
 
+/**
+ * ДТО ресурса
+ */
 @Data
 public class ResourceDTO {
-
-    private Long id;
 
     private ResourceType type;
 

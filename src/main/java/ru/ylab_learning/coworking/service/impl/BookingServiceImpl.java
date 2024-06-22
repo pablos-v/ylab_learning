@@ -1,6 +1,5 @@
 package ru.ylab_learning.coworking.service.impl;
 
-import lombok.Data;
 import ru.ylab_learning.coworking.domain.dto.BookingDTO;
 import ru.ylab_learning.coworking.domain.enums.InputType;
 import ru.ylab_learning.coworking.domain.exception.BookingNotFoundException;
@@ -21,35 +20,21 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Data
-public class BookingServiceImpl implements BookingService {
-
-    private final BookingRepository bookingRepository;
-    private final PersonService personService;
-    private final ResourceService resourceService;
-
-
-    private Booking getBookingById(Long bookingId) {
-        // TODO check if exists
-        return null;
-    }
+public record BookingServiceImpl(BookingRepository bookingRepository, PersonService personService, ResourceService resourceService) implements BookingService {
 
     @Override
     public List<Booking> getAllBookings() {
-        // TODO
-        return null;
+        return bookingRepository.findAll();
     }
 
     @Override
-    public Booking deleteById(Long idRequired) {
-        // TODO check if exists
-        return null;
+    public Booking deleteById(Long bookingId) throws BookingNotFoundException{
+        return bookingRepository.deleteById(bookingId).orElseThrow(BookingNotFoundException::new);
     }
 
     @Override
     public Booking save(BookingDTO booking) {
-        // TODO ИД созд в репо и записать
-        return null;
+        return bookingRepository.save(booking);
     }
 
     public Booking getById(Long bookingId) {
@@ -57,43 +42,69 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking createBooking() {
-        BookingDTO newBooking = askAndValidate(InputType.ADMIN_NEW_BOOKING);
-        return save(newBooking);
+    public List<Booking> getAllBookingsByPersonId(Long id) {
+        return bookingRepository.findAllByPersonId(id);
     }
 
     @Override
-    public Booking createBooking(Person person) {
+    public void deleteBooking() {
+        try {
+            long maxId = getAllBookings().stream()
+                    .mapToLong(Booking::getId)
+                    .max().orElseThrow(BookingNotFoundException::new);
+            Long idRequired = ConsoleInput.intInput(InputType.ID, maxId);
+            Booking deleted = deleteById(idRequired);
+            ConsoleOutput.print("Удалено бронирование: " + deleted);
+            Util.notifyUser(personService.getPersonById(deleted.getPersonId()));
+        } catch (BookingNotFoundException e) {
+            ConsoleOutput.print("Нет бронирований.");
+        }
+    }
+
+    @Override
+    public void createBooking() {
+        BookingDTO newBooking = askAndValidate(InputType.ADMIN_NEW_BOOKING);
+        ConsoleOutput.print("Добавлено бронирование: " + save(newBooking));
+        Util.notifyUser(personService.getPersonById(newBooking.getPersonId()));
+    }
+
+    @Override
+    public void createBooking(Person person) {
         BookingDTO newBooking = askAndValidate(InputType.USER_BOOKING);
         newBooking.setPersonId(person.getId());
-        return save(newBooking);
+        save(newBooking);
+        ConsoleOutput.print("Создано бронирование: " + newBooking);
     }
 
     @Override
-    public Booking updateBooking() {
+    public void updateBooking() {
         BookingDTO updated = askAndValidate(InputType.ADMIN_UPDATE_BOOKING);
-        Booking original  = getBookingById(updated.getBookingId());
-        original.setDate(updated.getDate());
-        original.setStartTime(updated.getStartTime());
-        original.setEndTime(updated.getEndTime());
-        original.setPersonId(updated.getPersonId());
-        original.setResourceId(updated.getResourceId());
-        bookingRepository.put(original);
-        return original;
+        Booking original;
+        try {
+            original = getById(updated.getBookingId());
+            original.setDate(updated.getDate());
+            original.setStartTime(updated.getStartTime());
+            original.setEndTime(updated.getEndTime());
+            original.setPersonId(updated.getPersonId());
+            original.setResourceId(updated.getResourceId());
+            bookingRepository.update(original);
+            ConsoleOutput.print("Изменено бронирование: " + original);
+            Util.notifyUser(personService.getPersonById(original.getPersonId()));
+        } catch (BookingNotFoundException e) {
+            ConsoleOutput.print("Бронирование с ID " + updated.getBookingId() + " не найдено");
+        }
     }
 
     private BookingDTO askAndValidate(InputType type) {
         BookingDTO booking = new BookingDTO();
         while (true) {
-            // получим строку с ID ресурса, ID пользователя, дату, часы начала и окончания
             String[] input = ConsoleInput.stringsInput(type);
             try {
-                // парсим
                 booking.setResourceId(Long.parseLong(input[0]));
                 booking.setDate(LocalDate.parse(input[1], DateTimeFormatter.ofPattern("dd-MM-yyyy")));
                 booking.setStartTime(LocalTime.parse(input[2] + "-00", DateTimeFormatter.ofPattern("HH-mm")));
                 booking.setEndTime(LocalTime.parse(input[3] + "-00", DateTimeFormatter.ofPattern("HH-mm")));
-                if (type == InputType.ADMIN_NEW_BOOKING || type == InputType.ADMIN_UPDATE_BOOKING)  {
+                if (type == InputType.ADMIN_NEW_BOOKING || type == InputType.ADMIN_UPDATE_BOOKING) {
                     booking.setPersonId(Long.parseLong(input[4]));
                     personService.getPersonById(booking.getPersonId());
                 }
@@ -120,10 +131,8 @@ public class BookingServiceImpl implements BookingService {
                 ConsoleOutput.print("Бронирования с ID " + booking.getBookingId() + " нет, попробуйте снова");
                 continue;
             }
-
             // проверить кофликты
-            if (Util.hasConflicts(booking.getDate(), getAllBookings(), booking.getStartTime(),
-                    booking.getEndTime())) {
+            if (Util.hasConflicts(booking.getDate(), getAllBookings(), booking.getStartTime(), booking.getEndTime())) {
                 ConsoleOutput.print("Выбранный слот занят, попробуйте снова");
                 continue;
             }

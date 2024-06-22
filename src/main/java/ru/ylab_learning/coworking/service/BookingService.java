@@ -1,7 +1,7 @@
 package ru.ylab_learning.coworking.service;
 
-import ru.ylab_learning.coworking.domain.model.Booking;
 import ru.ylab_learning.coworking.domain.dto.BookingDTO;
+import ru.ylab_learning.coworking.domain.model.Booking;
 import ru.ylab_learning.coworking.domain.model.Person;
 
 import java.util.List;
@@ -13,9 +13,13 @@ public interface BookingService {
 
     Booking save(BookingDTO booking);
 
-    Booking createBooking();
+    void createBooking();
 
-    Booking createBooking(Person person);
+    void createBooking(Person person);
 
-    Booking updateBooking();
+    void updateBooking();
+
+    List<Booking> getAllBookingsByPersonId(Long id);
+
+    void deleteBooking();
 }

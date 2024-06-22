@@ -5,10 +5,13 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Сущность бронирования
+ */
 @Data
 public class Booking {
 
-    private static long idCounter = 0;
+    private static long idCounter = 1L;
 
     private Long id;
 
