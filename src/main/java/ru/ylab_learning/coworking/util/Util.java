@@ -37,7 +37,7 @@ public class Util {
         // Отправляем уведомление
     }
 
-    public List<Slot> getAvailableSlots(LocalDate date, List<Booking> bookings) {
+    public static List<Slot> getAvailableSlots(LocalDate date, List<Booking> bookings) {
         List<Slot> availableSlots = new ArrayList<>();
 
         // Перебираем все часы с 00:00 до 24:00
@@ -46,15 +46,21 @@ public class Util {
             LocalTime endTime = LocalTime.of(hour + 1, 0);
 
             // Проверяем, не пересекается ли текущий слот с занятыми слотами
-            if (bookings.stream().filter(booking -> booking.getDate().equals(date))
-                    .noneMatch(booking -> booking.getStartTime().isAfter(startTime) &&
-                            booking.getStartTime().isBefore(endTime) ||
-                            booking.getEndTime().isAfter(startTime) &&
-                                    booking.getEndTime().isBefore(endTime))) {
+            if (!hasConflicts(date, bookings, startTime, endTime)) {
                 availableSlots.add(new Slot(startTime, endTime));
             }
         }
         return availableSlots;
+    }
+
+    public static boolean hasConflicts(LocalDate date, List<Booking> bookings, LocalTime startTime, LocalTime endTime) {
+        return bookings.stream()
+                .filter(booking -> booking.getDate().equals(date))
+                .anyMatch(booking ->
+                        (!booking.getStartTime().isBefore(startTime)) // он стартует не до нашего (во время или позже)
+                        && booking.getStartTime().isBefore(endTime) // и наш ещё не кончился
+                        || booking.getEndTime().isAfter(startTime) // или он закончится после старта нашего
+                        && (!booking.getEndTime().isAfter(endTime))); // и до окончания нашего
     }
 
 

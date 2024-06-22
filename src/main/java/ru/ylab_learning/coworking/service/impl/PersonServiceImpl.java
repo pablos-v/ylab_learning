@@ -64,4 +64,9 @@ public class PersonServiceImpl implements PersonService {
         return repository.findAll();
     }
 
+    @Override
+    public Person getPersonById(Long personId) {
+        return repository.findById(personId).orElseThrow(PersonNotFoundException::new);
+    }
+
 }

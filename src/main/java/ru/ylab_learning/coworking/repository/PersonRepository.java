@@ -11,4 +11,6 @@ public interface PersonRepository {
     void save(Person person);
 
     List<Person> findAll();
+
+    Optional<Person> findById(Long personId);
 }

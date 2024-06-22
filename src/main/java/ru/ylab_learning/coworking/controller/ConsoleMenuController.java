@@ -142,7 +142,7 @@ public class ConsoleMenuController {
 
             switch (choice) {
                 case 1 -> {
-                    Long maxId = bookingService.getAllBookings().stream()
+                    long maxId = bookingService.getAllBookings().stream()
                             .mapToLong(Booking::getId)
                             .max()
                             .orElse(-1L);
@@ -156,14 +156,14 @@ public class ConsoleMenuController {
                     }
                 }
                 case 2 -> {
-                    // TODO бронировать
-                    // получить строку, валидировать, парсить
-                    // запись сервис save()
-                    // уведомить
+                    Booking newBooking = bookingService.createBooking();
+                    ConsoleOutput.print("Добавлено бронирование: " + newBooking);
+                    Util.notifyUser(personService.getPersonById(newBooking.getPersonId()));
                 }
                 case 3 -> {
-// изменить бронь
-
+                    Booking editedBooking = bookingService.updateBooking();
+                    ConsoleOutput.print("Изменено бронирование: " + editedBooking);
+                    Util.notifyUser(personService.getPersonById(editedBooking.getPersonId()));
                 }
                 case 0 -> {
                     return;
@@ -173,9 +173,25 @@ public class ConsoleMenuController {
     }
 
     private void adminResourcesMenu() {
-        // TODO
         while (true) {
             int choice = Util.askNumberForMenu(MenuValues.ADMIN_RESOURCES_MENU);
+            switch (choice) {
+                case 1 -> {
+                    Resource newResource = resourceService.createResource();
+                    ConsoleOutput.print("Добавлен ресурс: " + newResource);
+                }
+                case 2 -> {
+                    Resource editedResource = resourceService.updateResource();
+                    ConsoleOutput.print("Изменен ресурс: " + editedResource);
+                }
+                case 3 -> {
+                    Resource deletedResource = resourceService.deleteResource();
+                    ConsoleOutput.print("Удален ресурс: " + deletedResource);
+                }
+                case 0 -> {
+                    return;
+                }
+            }
         }
     }
 
