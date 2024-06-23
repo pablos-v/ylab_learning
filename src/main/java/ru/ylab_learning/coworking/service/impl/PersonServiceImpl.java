@@ -14,8 +14,15 @@ import ru.ylab_learning.coworking.util.Util;
 
 import java.util.List;
 
+/**
+ * Реализация сервиса пользователей
+ * @param repository - репозиторий пользователей
+ */
 public record PersonServiceImpl(PersonRepository repository) implements PersonService {
-
+    /**
+     * Метод аутентификации. В цикле запрашивает логин и пароль, и проверяет валидность.
+     * @return объект пользователя
+     */
     @Override
     public Person auth() {
         while (true) {
@@ -34,6 +41,10 @@ public record PersonServiceImpl(PersonRepository repository) implements PersonSe
         }
     }
 
+    /**
+     * Метод создания пользователя. Циклически запрашивает данные.
+     * Выход из цикла только при успешном создании пользователя.
+     */
     @Override
     public void createUser() {
         while (true) {
@@ -64,23 +75,46 @@ public record PersonServiceImpl(PersonRepository repository) implements PersonSe
         }
     }
 
+    /**
+     * Метод сохранения пользователя на основе DTO.
+     * @param person DTO пользователя
+     * @return объект пользователя
+     */
     @Override
     public Person save(PersonDTO person) {
         return repository.save(person);
     }
 
+    /**
+     * Метод получения всех пользователей из БД.
+     * @return список всех пользователей
+     */
     @Override
     public List<Person> getAllPersons() {
         return repository.findAll();
     }
 
+    /**
+     * Метод получения максимального идентификатора пользователя из БД.
+     * Нужен для предварительной валидации при вводе данных на запрос ID.
+     * @return максимальный идентификатор пользователя
+     * @throws PersonNotFoundException если пользователей нет
+     */
     @Override
-    public Long getMaxId() {
-        return getAllPersons().stream().mapToLong(Person::getId).max().orElseThrow(PersonNotFoundException::new);
+    public Long getMaxId() throws PersonNotFoundException{
+        return getAllPersons().stream()
+                .mapToLong(Person::getId)
+                .max().orElseThrow(PersonNotFoundException::new);
     }
 
+    /**
+     * Метод получения пользователя по его ID.
+     * @param personId ID пользователя
+     * @return объект пользователя
+     * @throws PersonNotFoundException если пользователь не найден
+     */
     @Override
-    public Person getPersonById(Long personId) {
+    public Person getPersonById(Long personId) throws PersonNotFoundException{
         return repository.findById(personId).orElseThrow(PersonNotFoundException::new);
     }
 

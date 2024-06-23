@@ -19,11 +19,21 @@ import java.util.regex.Pattern;
  * Класс-коллекция вспомогательных методов
  */
 public class Util {
+    /**
+     * Запрашивает номер пункта меню
+     * @param menu - тип меню
+     * @return номер пункта меню
+     */
     public static int askNumberForMenu(MenuValues menu) {
         ConsoleOutput.print(String.valueOf(menu));
         return Math.toIntExact(ConsoleInput.intInput(InputType.MENU_NUMBER, (long) menu.getMaxNumberOfMenu()));
     }
 
+    /**
+     * Валидация адреса email
+     * @param check - проверяемое значение
+     * @return true если валидно
+     */
     public static boolean emailMatchesPattern(String check) {
         String regexPattern = "\\w+@\\w+\\.\\w+";
         return Pattern.compile(regexPattern).matcher(check).matches();
@@ -38,6 +48,13 @@ public class Util {
         // Отправляем уведомление
     }
 
+    /**
+     * Метод, составляющий список свободных слотов по ресурсам на определённую дату.
+     * @param resources - список всех ресурсов
+     * @param date - дата
+     * @param bookings - список имеющихся бронирований
+     * @return список свободных слотов
+     */
     public static List<Slot> getAvailableSlots(List<Resource> resources, LocalDate date, List<Booking> bookings) {
         List<Slot> availableSlots = new ArrayList<>();
 
@@ -57,6 +74,14 @@ public class Util {
         return availableSlots;
     }
 
+    /**
+     * Метод определяет, есть ли пересечение с занятыми слотами по времени
+     * @param date - дата
+     * @param bookings - список имеющихся бронирований
+     * @param startTime - время начала
+     * @param endTime - время окончания
+     * @return true если есть пересечение
+     */
     public static boolean hasConflicts(LocalDate date, List<Booking> bookings, LocalTime startTime, LocalTime endTime) {
         return bookings.stream()
                 .filter(booking -> booking.getDate().equals(date))
@@ -67,6 +92,10 @@ public class Util {
                         && (!booking.getEndTime().isAfter(endTime))); // и до окончания нашего
     }
 
+    /**
+     * Метод фильтрует список бронирований по дате и выводит в консоль.
+     * @param allBookings - список всех бронирований
+     */
     public static void filterBookingsByDate(List<Booking> allBookings) {
         LocalDate dateRequired = ConsoleInput.dateInput();
         List<Booking> filteredBookings = allBookings.stream()
@@ -78,9 +107,17 @@ public class Util {
             ConsoleOutput.printList(filteredBookings);
         }
     }
+
+    /**
+     * Метод фильтрует список бронирований по пользователю и выводит в консоль.
+     * Предварительно запрашивает ID пользователя.
+     * @param allBookings - список всех бронирований
+     * @param maxId - максимальный ID пользователя (для валидации при вводе)
+     */
     public static void filterBookingsByPerson(List<Booking> allBookings, Long maxId) {
         Long idRequired = ConsoleInput.intInput(InputType.ID, maxId);
-        List<Booking> filteredBookings = allBookings.stream().filter(booking -> booking.getPersonId().equals(idRequired)).toList();
+        List<Booking> filteredBookings = allBookings.stream()
+                .filter(booking -> booking.getPersonId().equals(idRequired)).toList();
         if (filteredBookings.isEmpty()) {
             ConsoleOutput.print("Нет бронирований для пользователя с ID: " + idRequired);
         } else {
@@ -89,9 +126,16 @@ public class Util {
         }
     }
 
+    /**
+     * Метод фильтрует список бронирований по ресурсу и выводит в консоль.
+     * Предварительно запрашивает ID ресурса.
+     * @param allBookings - список всех бронирований
+     * @param maxId - максимальный ID ресурса  (для валидации при вводе)
+     */
     public static void filterBookingsByResource(List<Booking> allBookings, Long maxId) {
         Long idRequired = ConsoleInput.intInput(InputType.ID, maxId);
-        List<Booking> filteredBookings = allBookings.stream().filter(booking -> booking.getResourceId().equals(idRequired)).toList();
+        List<Booking> filteredBookings = allBookings.stream()
+                .filter(booking -> booking.getResourceId().equals(idRequired)).toList();
         if (filteredBookings.isEmpty()) {
             ConsoleOutput.print("Нет бронирований для ресурса с ID: " + idRequired);
         } else {
@@ -99,5 +143,4 @@ public class Util {
             ConsoleOutput.printList(filteredBookings);
         }
     }
-
 }

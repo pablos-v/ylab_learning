@@ -10,10 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Реализация репозитория бронирований
+ */
 public class BookingRepositoryImpl implements BookingRepository {
-
+    /**
+     * Хранение в памяти
+     */
     private final HashMap<Long, Booking> bookings = new HashMap<>();
 
+    // Иницияция данных для теста приложения
     {
         Booking bookingOne = new Booking(1L, 2L, LocalDate.of(2024, 6, 25), LocalTime.of(10, 0), LocalTime.of(12, 0));
         Booking bookingTwo = new Booking(3L, 2L, LocalDate.of(2024, 6, 25), LocalTime.of(13, 0), LocalTime.of(18, 0));
@@ -22,21 +28,42 @@ public class BookingRepositoryImpl implements BookingRepository {
         List.of(bookingOne, bookingTwo, bookingThree, bookingFour)
                 .forEach(it-> bookings.put(it.getId(), it));
     }
+
+    /**
+     * Метод поиска бронирования по id
+     * @param bookingId ID бронирования
+     * @return Optional<Booking>
+     */
     @Override
     public Optional<Booking> findById(Long bookingId) {
-        return Optional.of(bookings.get(bookingId));
+        return Optional.ofNullable(bookings.get(bookingId));
     }
 
+    /**
+     * Метод изменения бронирования
+     * @param original изменённое бронирование
+     */
     @Override
     public void update(Booking original) {
         bookings.put(original.getId(), original);
     }
 
+    /**
+     * Метод поиска всех бронирований по id пользователя
+     * @param id id пользователя
+     * @return список бронирований
+     */
     @Override
     public List<Booking> findAllByPersonId(Long id) {
         return bookings.values().stream().filter(it->it.getPersonId().equals(id)).toList();
     }
 
+    /**
+     * Метод сохранения нового бронирования, сначала создаёт новый объект бронирования на основе DTO.
+     * При создании бронирования, ему присваивается новый ID.
+     * @param dto DTO объекта бронирования
+     * @return созданное бронирование
+     */
     @Override
     public Booking save(BookingDTO dto) {
         Booking newBooking = new Booking(
@@ -50,6 +77,11 @@ public class BookingRepositoryImpl implements BookingRepository {
         return newBooking;
     }
 
+    /**
+     * Метод удаления бронирования по его ID
+     * @param idRequired ID бронирования
+     * @return удалённое бронирование в виде Optional<Booking>
+     */
     @Override
     public Optional<Booking> deleteById(Long idRequired) {
         Optional<Booking> response = findById(idRequired);
@@ -59,6 +91,10 @@ public class BookingRepositoryImpl implements BookingRepository {
         return response;
     }
 
+    /**
+     * Метод поиска всех бронирований
+     * @return список бронирований
+     */
     @Override
     public List<Booking> findAll() {
         return bookings.values().stream().toList();

@@ -22,7 +22,7 @@ import java.util.List;
  */
 public record ConsoleMenuController(PersonService personService, BookingService bookingService, ResourceService resourceService) {
     /**
-     * Стартовое меню
+     * Стартовое меню.
      */
     public void startMenu() {
         boolean exit = false;
@@ -42,6 +42,10 @@ public record ConsoleMenuController(PersonService personService, BookingService 
         }
     }
 
+    /**
+     * После аутентификации пользователя, авторизация происходит здесь.
+     * @param person объект пользователя
+     */
     private void mainMenu(Person person) {
         if (person.getRole().equals(PersonRole.ADMIN)) {
             adminMainMenu();

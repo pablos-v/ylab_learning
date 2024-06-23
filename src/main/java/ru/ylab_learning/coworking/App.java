@@ -15,11 +15,12 @@ import ru.ylab_learning.coworking.service.impl.PersonServiceImpl;
 import ru.ylab_learning.coworking.service.impl.ResourceServiceImpl;
 
 /**
+ * Точка входа.
  * Для целей тестирования приложения добавлены:
  * - администратор (admin/password)
  * - пользователь (user/password)
- * - 2 конференц-зала (большой и малый) с эмуляцией занятости
- * - 5 рабочих мест (2 из них типа Комфорт+) с эмуляцией занятости
+ * - 2 конференц-зала с эмуляцией занятости
+ * - 5 рабочих мест с эмуляцией занятости
  */
 public class App {
     public static void main(String[] args) {
