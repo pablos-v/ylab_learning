@@ -6,9 +6,18 @@ import ru.ylab_learning.coworking.domain.model.Booking;
 import ru.ylab_learning.coworking.domain.model.Person;
 import ru.ylab_learning.coworking.in.ConsoleInput;
 import ru.ylab_learning.coworking.out.ConsoleOutput;
+import ru.ylab_learning.coworking.repository.BookingRepository;
+import ru.ylab_learning.coworking.repository.PersonRepository;
+import ru.ylab_learning.coworking.repository.ResourceRepository;
+import ru.ylab_learning.coworking.repository.impl.BookingRepositoryImpl;
+import ru.ylab_learning.coworking.repository.impl.PersonRepositoryImpl;
+import ru.ylab_learning.coworking.repository.impl.ResourceRepositoryImpl;
 import ru.ylab_learning.coworking.service.BookingService;
 import ru.ylab_learning.coworking.service.PersonService;
 import ru.ylab_learning.coworking.service.ResourceService;
+import ru.ylab_learning.coworking.service.impl.BookingServiceImpl;
+import ru.ylab_learning.coworking.service.impl.PersonServiceImpl;
+import ru.ylab_learning.coworking.service.impl.ResourceServiceImpl;
 import ru.ylab_learning.coworking.util.Util;
 
 import java.time.LocalDate;
@@ -21,6 +30,22 @@ import java.util.List;
  * @param resourceService сервис ресурсов
  */
 public record ConsoleMenuController(PersonService personService, BookingService bookingService, ResourceService resourceService) {
+    /**
+     * Инициализатор контроллера консольного меню
+     * @return инициализированный контроллер
+     */
+    public static ConsoleMenuController build() {
+        PersonRepository personRepository = new PersonRepositoryImpl();
+        BookingRepository bookingRepository = new BookingRepositoryImpl();
+        ResourceRepository resourceRepository = new ResourceRepositoryImpl();
+
+        PersonService personService = new PersonServiceImpl(personRepository);
+        ResourceService resourceService = new ResourceServiceImpl(resourceRepository);
+        BookingService bookingService = new BookingServiceImpl(bookingRepository, personService, resourceService);
+
+        return new ConsoleMenuController(personService, bookingService, resourceService);
+    }
+
     /**
      * Стартовое меню.
      */

@@ -27,23 +27,11 @@ public class PersonRepositoryImpl implements PersonRepository {
         persons.put(user.getId(), user);
     }
 
-    /**
-     * Метод поиска пользователя по логину.
-     * Используется на стадии создания пользователя для проверки уникальности.
-     * @param login логин пользователя
-     * @return Optional<Person>
-     */
     @Override
     public Optional<Person> findByLogin(String login) {
         return persons.values().stream().filter(p -> p.getLogin().equals(login)).findFirst();
     }
 
-    /**
-     * Метод сохраниния нового пользователя. Сначала создаёт пользователя на основе DTO.
-     * При создании пользователя, ему присваивается новый ID.
-     * @param dto DTO пользователя
-     * @return созданного пользователя
-     */
     @Override
     public Person save(PersonDTO dto) {
         Person savedPerson = new Person(
@@ -56,20 +44,11 @@ public class PersonRepositoryImpl implements PersonRepository {
         return savedPerson;
     }
 
-    /**
-     * Метод поиска всех пользователей.
-     * @return список пользователей
-     */
     @Override
     public List<Person> findAll() {
         return persons.values().stream().toList();
     }
 
-    /**
-     * Метод поиска пользователя по ID.
-     * @param personId ID пользователя
-     * @return Optional<Person>
-     */
     @Override
     public Optional<Person> findById(Long personId) {
         return Optional.ofNullable(persons.get(personId));

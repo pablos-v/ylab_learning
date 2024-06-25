@@ -29,41 +29,21 @@ public class BookingRepositoryImpl implements BookingRepository {
                 .forEach(it-> bookings.put(it.getId(), it));
     }
 
-    /**
-     * Метод поиска бронирования по id
-     * @param bookingId ID бронирования
-     * @return Optional<Booking>
-     */
     @Override
     public Optional<Booking> findById(Long bookingId) {
         return Optional.ofNullable(bookings.get(bookingId));
     }
 
-    /**
-     * Метод изменения бронирования
-     * @param original изменённое бронирование
-     */
     @Override
     public void update(Booking original) {
         bookings.put(original.getId(), original);
     }
 
-    /**
-     * Метод поиска всех бронирований по id пользователя
-     * @param id id пользователя
-     * @return список бронирований
-     */
     @Override
     public List<Booking> findAllByPersonId(Long id) {
         return bookings.values().stream().filter(it->it.getPersonId().equals(id)).toList();
     }
 
-    /**
-     * Метод сохранения нового бронирования, сначала создаёт новый объект бронирования на основе DTO.
-     * При создании бронирования, ему присваивается новый ID.
-     * @param dto DTO объекта бронирования
-     * @return созданное бронирование
-     */
     @Override
     public Booking save(BookingDTO dto) {
         Booking newBooking = new Booking(
@@ -77,11 +57,6 @@ public class BookingRepositoryImpl implements BookingRepository {
         return newBooking;
     }
 
-    /**
-     * Метод удаления бронирования по его ID
-     * @param idRequired ID бронирования
-     * @return удалённое бронирование в виде Optional<Booking>
-     */
     @Override
     public Optional<Booking> deleteById(Long idRequired) {
         Optional<Booking> response = findById(idRequired);
@@ -91,10 +66,6 @@ public class BookingRepositoryImpl implements BookingRepository {
         return response;
     }
 
-    /**
-     * Метод поиска всех бронирований
-     * @return список бронирований
-     */
     @Override
     public List<Booking> findAll() {
         return bookings.values().stream().toList();

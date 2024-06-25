@@ -19,50 +19,28 @@ import java.util.List;
  * @param resourceRepository - репозиторий ресурсов
  */
 public record ResourceServiceImpl(ResourceRepository resourceRepository) implements ResourceService {
-    /**
-     * Метод получения всех ресурсов из БД.
-     * @return список всех ресурсов
-     */
+
     @Override
     public List<Resource> getAllResources() {
         return resourceRepository.findAll();
     }
 
-    /**
-     * Метод получения ресурса по его ID.
-     * @param id ID ресурса
-     * @return объект ресурса
-     * @throws ResourceNotFoundException если ресурс не найден
-     */
     @Override
     public Resource getById(Long id) throws ResourceNotFoundException{
         return resourceRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
     }
 
-    /**
-     * Метод создания ресурса. Сначала запрашивает и валидирует параметры ресурса,
-     * сохраняя их в промежуточный объект DTO.
-     */
     @Override
     public void createResource() {
         ResourceDTO resource = askAndValidate();
         ConsoleOutput.print("Добавлен ресурс: " + save(resource));
     }
 
-    /**
-     * Метод сохранения ресурса на основе DTO.
-     * @param resource DTO ресурса
-     * @return объект сохранённого ресурса
-     */
     @Override
     public Resource save(ResourceDTO resource) {
         return resourceRepository.save(resource);
     }
 
-    /**
-     * Метод обновления ресурса на основе DTO. Сначала запрашивает и валидирует параметры ресурса,
-     * сохраняя их в промежуточный объект DTO.
-     */
     @Override
     public void updateResource() {
         try {
@@ -81,9 +59,6 @@ public record ResourceServiceImpl(ResourceRepository resourceRepository) impleme
         }
     }
 
-    /**
-     * Метод удаления ресурса. Сначала запрашивает ID ресурса.
-     */
     @Override
     public void deleteResource() {
         try {
@@ -97,12 +72,6 @@ public record ResourceServiceImpl(ResourceRepository resourceRepository) impleme
         }
     }
 
-    /**
-     * Метод получения максимального идентификатора ресурса из БД.
-     * Нужен для предварительной валидации при вводе данных на запрос ID.
-     * @return максимальный идентификатор ресурса
-     * @throws ResourceNotFoundException если ресурса нет
-     */
     @Override
     public long getMaxId() throws ResourceNotFoundException{
         return getAllResources().stream().mapToLong(Resource::getId).max()

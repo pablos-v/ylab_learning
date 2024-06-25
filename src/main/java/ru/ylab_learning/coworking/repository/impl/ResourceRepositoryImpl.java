@@ -31,21 +31,11 @@ public class ResourceRepositoryImpl implements ResourceRepository {
                 .forEach(resource -> resources.put(resource.getId(), resource));
     }
 
-    /**
-     * Метод поиска ресурса по ID
-     * @param id ID ресурса
-     * @return Optional<Resource>
-     */
     @Override
     public Optional<Resource> findById(long id) {
         return Optional.ofNullable(resources.get(id));
     }
 
-    /**
-     * Метод удаления ресурса по его ID
-     * @param idRequired ID ресурса
-     * @return удалённый ресурс в виде Optional<Resource>
-     */
     @Override
     public Optional<Resource> deleteById(Long idRequired) {
         Optional<Resource> response = findById(idRequired);
@@ -55,12 +45,6 @@ public class ResourceRepositoryImpl implements ResourceRepository {
         return response;
     }
 
-    /**
-     * Метод сохранения нового ресурса, сначала создаёт новый объект ресурса на основе DTO.
-     * При создании ресурса, ему присваивается новый ID.
-     * @param dto DTO объекта ресурса
-     * @return созданный ресурс
-     */
     @Override
     public Resource save(ResourceDTO dto) {
         Resource newResource  = new Resource(
@@ -72,19 +56,11 @@ public class ResourceRepositoryImpl implements ResourceRepository {
         return newResource;
     }
 
-    /**
-     * Метод изменения ресурса
-     * @param original изменённый ресурс
-     */
     @Override
     public void update(Resource original) {
         resources.put(original.getId(), original);
     }
 
-    /**
-     * Метод поиска всех ресурсов
-     * @return список ресурсов
-     */
     @Override
     public List<Resource> findAll() {
         return resources.values().stream().toList();

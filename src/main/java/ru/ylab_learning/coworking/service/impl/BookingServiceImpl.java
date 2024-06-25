@@ -27,62 +27,31 @@ import java.util.List;
  * @param resourceService - репозитория ресурсов
  */
 public record BookingServiceImpl(BookingRepository bookingRepository, PersonService personService, ResourceService resourceService) implements BookingService {
-    /**
-     * Получение всех бронирований из репозитория
-     * @return список всех бронирований
-     */
+
     @Override
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
-    /**
-     * Удаление бронирования по ID
-     * @param bookingId - ID бронирования
-     * @return удалённое бронирование
-     * @throws BookingNotFoundException - если бронирование не найдено,
-     * исключение пробрасывается выше для корректной обработки
-     */
     @Override
     public Booking deleteById(Long bookingId) throws BookingNotFoundException{
         return bookingRepository.deleteById(bookingId).orElseThrow(BookingNotFoundException::new);
     }
 
-    /**
-     * Сохранение бронирования
-     * @param booking DTO бронирования
-     * @return сохранённый объект бронирования
-     */
     @Override
     public Booking save(BookingDTO booking) {
         return bookingRepository.save(booking);
     }
-
-    /**
-     * Получение бронирования по ID
-     * @param bookingId ID бронирования
-     * @return объект бронирования
-     * @throws BookingNotFoundException - если бронирование не найдено,
-     * исключение пробрасывается выше для корректной обработки
-     */
+@Override
     public Booking getById(Long bookingId) throws BookingNotFoundException{
         return bookingRepository.findById(bookingId).orElseThrow(BookingNotFoundException::new);
     }
 
-    /**
-     * Получение всех бронирований пользователя по его ID
-     * @param id ID пользователя
-     * @return список бронирований
-     */
     @Override
     public List<Booking> getAllBookingsByPersonId(Long id) {
         return bookingRepository.findAllByPersonId(id);
     }
 
-    /**
-     * Удаление бронирования. Сначала запрашивает ID бронирования, и если такого бронирования нет, то сообщит.
-     * При удачном удалении вызывает метод уведомления пользователя.
-     */
     @Override
     public void deleteBooking() {
         try {
@@ -98,11 +67,6 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
         }
     }
 
-    /**
-     * Метод создания бронирования администратором. Сначала запрашивает и валидирует параметры бронирования,
-     * сохраняя их в промежуточный объект DTO.
-     * При удачном сохранении вызывает метод уведомления пользователя - владельца бронирования.
-     */
     @Override
     public void createBooking() {
         BookingDTO newBooking = askAndValidate(InputType.ADMIN_NEW_BOOKING);
@@ -110,11 +74,6 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
         Util.notifyUser(personService.getPersonById(newBooking.getPersonId()));
     }
 
-    /**
-     * Метод создания бронирования пользователем. Сначала запрашивает и валидирует параметры бронирования,
-     * сохраняя их в промежуточный объект DTO.
-     * @param person объект пользователя
-     */
     @Override
     public void createBooking(Person person) {
         BookingDTO newBooking = askAndValidate(InputType.USER_BOOKING);
@@ -123,11 +82,6 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
         ConsoleOutput.print("Создано бронирование: " + newBooking);
     }
 
-    /**
-     * Метод обновления бронирования администратором. Сначала запрашивает и валидирует параметры бронирования,
-     * сохраняя их в промежуточный объект DTO.
-     * При удачном изменении вызывает метод уведомления пользователя - владельца бронирования.
-     */
     @Override
     public void updateBooking() {
         BookingDTO updated = askAndValidate(InputType.ADMIN_UPDATE_BOOKING);

@@ -6,12 +6,41 @@ import ru.ylab_learning.coworking.domain.model.Person;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Интерфейс репозитория пользователей.
+ */
 public interface PersonRepository {
+
+    /**
+     * Метод поиска пользователя по логину.
+     * Используется на стадии создания пользователя для проверки уникальности.
+     *
+     * @param login логин пользователя
+     * @return Optional<Person>
+     */
     Optional<Person> findByLogin(String login);
 
-    Person save(PersonDTO person);
+    /**
+     * Метод сохраниния нового пользователя. Сначала создаёт пользователя на основе DTO.
+     * При создании пользователя, ему присваивается новый ID.
+     *
+     * @param dto DTO пользователя
+     * @return созданного пользователя
+     */
+    Person save(PersonDTO dto);
 
+    /**
+     * Метод поиска всех пользователей.
+     *
+     * @return список пользователей
+     */
     List<Person> findAll();
 
+    /**
+     * Метод поиска пользователя по ID.
+     *
+     * @param personId ID пользователя
+     * @return Optional<Person>
+     */
     Optional<Person> findById(Long personId);
 }

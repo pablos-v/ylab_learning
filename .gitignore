@@ -36,3 +36,4 @@ build/
 /.mvn/
 /data/
 /docs/
+/.idea/
