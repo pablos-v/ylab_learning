@@ -1,4 +1,5 @@
 homework_1: https://github.com/pablos-v/ylab_learning/pull/1
+homework_2: https://github.com/pablos-v/ylab_learning/pull/2
 
 ## Пояснение
 Предполагается, что:
