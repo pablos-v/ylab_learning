@@ -64,12 +64,14 @@ public record PersonServiceImpl(PersonRepository repository) implements PersonSe
                         " уже существует! \nПопробуйте снова.");
             } catch (WrongEmailException e) {
                 ConsoleOutput.print("Неправильный email. Попробуйте снова.");
+            } catch (PersonNotFoundException e){
+                ConsoleOutput.print("Ошибка сохранения пользователя в БД. Попробуйте снова.");
             }
         }
     }
 
     @Override
-    public Person save(PersonDTO person) {
+    public Person save(PersonDTO person) throws PersonNotFoundException{
         return repository.save(person);
     }
 

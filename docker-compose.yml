@@ -1,0 +1,15 @@
+version: '2.2'
+services:
+  db:
+    image: postgres:latest
+    container_name: training_diary
+    environment:
+      POSTGRES_DB: training_diary
+      POSTGRES_USER: ylab
+      POSTGRES_PASSWORD: ylabylab
+    ports:
+      - "5432:5432"
+    volumes:
+      # инициация БД
+      - /create_db.sql
+    restart: always

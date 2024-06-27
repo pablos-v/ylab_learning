@@ -1,5 +1,6 @@
 package ru.ylab_learning.coworking.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.ylab_learning.coworking.domain.enums.PersonRole;
 
@@ -7,28 +8,19 @@ import ru.ylab_learning.coworking.domain.enums.PersonRole;
  * Сущность пользователя
  */
 @Data
+@AllArgsConstructor
 public class Person {
-
-    private static long idCounter = 1L;
-
-    private Long id;
+// TODO check if final ok then -> to record
+    private final Long id;
     // уникален
-    private String login;
+    private final String login;
 
-    private String password;
+    private final String password;
 
-    private PersonRole role;
+    private final PersonRole role;
 
-    private String name;
+    private final String name;
 
-    private String email;
+    private final String email;
 
-    public Person(String login, String password, String name, String email) {
-        this.id = idCounter++;
-        this.login = login;
-        this.password = password;
-        this.role = PersonRole.USER;
-        this.name = name;
-        this.email = email;
-    }
 }

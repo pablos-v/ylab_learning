@@ -1,5 +1,6 @@
 package ru.ylab_learning.coworking.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -9,9 +10,8 @@ import java.time.LocalTime;
  * Сущность бронирования
  */
 @Data
+@AllArgsConstructor
 public class Booking {
-
-    private static long idCounter = 1L;
 
     private Long id;
 
@@ -26,7 +26,6 @@ public class Booking {
     private LocalTime endTime;
 
     public Booking(Long resourceId, Long personId, LocalDate date, LocalTime startTime, LocalTime endTime) {
-        this.id = idCounter++;
         this.resourceId = resourceId;
         this.personId = personId;
         this.date = date;

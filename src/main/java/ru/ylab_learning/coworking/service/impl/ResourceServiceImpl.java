@@ -32,12 +32,19 @@ public record ResourceServiceImpl(ResourceRepository resourceRepository) impleme
 
     @Override
     public void createResource() {
-        ResourceDTO resource = askAndValidate();
-        ConsoleOutput.print("Добавлен ресурс: " + save(resource));
+        while (true) {
+            try {
+                ResourceDTO resource = askAndValidate();
+                ConsoleOutput.print("Добавлен ресурс: " + save(resource));
+                return;
+            } catch (ResourceNotFoundException e) {
+                ConsoleOutput.print("Ошибка сохранения ресурса. Попробуйте ещё раз.");
+            }
+        }
     }
 
     @Override
-    public Resource save(ResourceDTO resource) {
+    public Resource save(ResourceDTO resource) throws ResourceNotFoundException{
         return resourceRepository.save(resource);
     }
 
@@ -95,7 +102,7 @@ public record ResourceServiceImpl(ResourceRepository resourceRepository) impleme
                 }
                 resource.setRentPrice(Integer.parseInt(input[1]));
                 resource.setDescription(String.join(" ", Arrays.copyOfRange(input, 2, input.length)));
-
+                resource.setActive(true);
             } catch (NumberFormatException e) {
                 ConsoleOutput.print("Неверный формат данных, попробуйте снова");
                 continue;
