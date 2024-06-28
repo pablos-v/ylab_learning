@@ -16,9 +16,3 @@ public class App {
         console.startMenu();
     }
 }
-
-// TODO : Javadoc
-// TODO : Докер
-// TODO : убрать H2
-// TODO : check for TODOs/warnings
-// TODO : optim imports

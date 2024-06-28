@@ -76,7 +76,7 @@ public record ConsoleMenuController(PersonService personService, BookingService 
      * @param person объект пользователя
      */
     private void mainMenu(Person person) {
-        if (person.getRole().equals(PersonRole.ADMIN)) {
+        if (person.role().equals(PersonRole.ADMIN)) {
             adminMainMenu();
         } else {
             userMainMenu(person);
@@ -154,11 +154,11 @@ public record ConsoleMenuController(PersonService personService, BookingService 
         while (true) {
             int choice = Util.askNumberForMenu(MenuValues.USER_MENU);
             switch (choice) {
-                case 1 -> ConsoleOutput.printList(bookingService.getAllBookingsByPersonId(person.getId()));
+                case 1 -> ConsoleOutput.printList(bookingService.getAllBookingsByPersonId(person.id()));
                 case 2 -> ConsoleOutput.printList(resourceService.getAllResources());
                 case 3 -> {
                     LocalDate date = ConsoleInput.dateInput();
-                    List<Booking> userBookings = bookingService.getAllBookingsByPersonId(person.getId());
+                    List<Booking> userBookings = bookingService.getAllBookingsByPersonId(person.id());
                     ConsoleOutput.printList(Util.getAvailableSlots(resourceService.getAllResources(), date, userBookings));
                 }
                 case 4 -> bookingService.createBooking(person);

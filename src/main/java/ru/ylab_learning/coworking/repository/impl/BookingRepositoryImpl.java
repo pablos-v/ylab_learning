@@ -26,7 +26,6 @@ public record BookingRepositoryImpl(String dbUrl, String dbUser, String dbPasswo
              PreparedStatement statement = connection.prepareStatement(SQLQueries.FIND_BOOKING_BY_ID)) {
             statement.setLong(1, bookingId);
             ResultSet resultSet = statement.executeQuery();
-            // TODO maybe while (resultSet.next()) {
             if (resultSet.next()) {
                 booking = buildBookingFromResultSet(resultSet);
             }

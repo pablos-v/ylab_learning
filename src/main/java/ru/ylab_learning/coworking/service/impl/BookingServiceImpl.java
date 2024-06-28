@@ -88,7 +88,7 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
         while (true) {
             try {
                 newBooking = askAndValidate(InputType.USER_BOOKING);
-                newBooking.setPersonId(person.getId());
+                newBooking.setPersonId(person.id());
                 save(newBooking);
                 ConsoleOutput.print("Создано бронирование: " + newBooking);
                 return;

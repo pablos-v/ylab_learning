@@ -14,10 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.ylab_learning.coworking.domain.dto.BookingDTO;
-import ru.ylab_learning.coworking.domain.dto.ResourceDTO;
-import ru.ylab_learning.coworking.domain.enums.ResourceType;
 import ru.ylab_learning.coworking.domain.model.Booking;
-import ru.ylab_learning.coworking.domain.model.Resource;
 import ru.ylab_learning.coworking.out.ConsoleOutput;
 
 import java.io.FileInputStream;
@@ -33,7 +30,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 class BookingRepositoryImplTest {

@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.ylab_learning.coworking.domain.dto.Slot;
-import ru.ylab_learning.coworking.domain.enums.InputType;
-import ru.ylab_learning.coworking.domain.enums.MenuValues;
 import ru.ylab_learning.coworking.domain.enums.ResourceType;
 import ru.ylab_learning.coworking.domain.model.Booking;
 import ru.ylab_learning.coworking.domain.model.Resource;

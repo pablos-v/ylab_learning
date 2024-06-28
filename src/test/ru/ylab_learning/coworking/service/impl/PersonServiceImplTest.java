@@ -6,14 +6,10 @@ import org.junit.jupiter.api.Test;
 import ru.ylab_learning.coworking.domain.dto.PersonDTO;
 import ru.ylab_learning.coworking.domain.enums.PersonRole;
 import ru.ylab_learning.coworking.domain.exception.PersonNotFoundException;
-import ru.ylab_learning.coworking.domain.exception.PersonNotFoundException;
 import ru.ylab_learning.coworking.domain.model.Person;
-import ru.ylab_learning.coworking.domain.model.Person;
-import ru.ylab_learning.coworking.repository.PersonRepository;
 import ru.ylab_learning.coworking.repository.PersonRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

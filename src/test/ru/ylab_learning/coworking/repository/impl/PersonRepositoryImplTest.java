@@ -14,11 +14,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.ylab_learning.coworking.domain.dto.PersonDTO;
-import ru.ylab_learning.coworking.domain.dto.ResourceDTO;
 import ru.ylab_learning.coworking.domain.enums.PersonRole;
-import ru.ylab_learning.coworking.domain.enums.ResourceType;
 import ru.ylab_learning.coworking.domain.model.Person;
-import ru.ylab_learning.coworking.domain.model.Resource;
 import ru.ylab_learning.coworking.out.ConsoleOutput;
 
 import java.io.FileInputStream;
@@ -32,7 +29,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 @Testcontainers
 class PersonRepositoryImplTest {
     @Container
@@ -84,8 +80,8 @@ class PersonRepositoryImplTest {
         Optional<Person> person = repository.findByLogin("user");
 
         assertThat(person).isPresent();
-        assertThat(person.get().getLogin()).isEqualTo("user");
-        assertThat(person.get().getRole()).isEqualTo(PersonRole.USER);
+        assertThat(person.get().login()).isEqualTo("user");
+        assertThat(person.get().role()).isEqualTo(PersonRole.USER);
     }
     @Test
     @DisplayName("Тест на попытку возвращения пользователя по логину, если он не существует")
@@ -103,7 +99,7 @@ class PersonRepositoryImplTest {
         Person person  = repository.save(dto);
 
         assertThat(person).isNotNull();
-        assertThat(person.getEmail()).isEqualTo(dto.getEmail());
+        assertThat(person.email()).isEqualTo(dto.getEmail());
     }
 
     @Test
@@ -125,7 +121,7 @@ class PersonRepositoryImplTest {
         Optional<Person> result = repository.findById(1L);
 
         assertThat(result).isPresent();
-        assertThat(result.get().getId()).isEqualTo(1L);
+        assertThat(result.get().id()).isEqualTo(1L);
     }
     @Test
     @DisplayName("Тест на попытку возвращения пользователя по id, если он не существует")

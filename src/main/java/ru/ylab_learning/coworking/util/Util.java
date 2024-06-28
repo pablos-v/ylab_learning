@@ -44,7 +44,7 @@ public class Util {
      * @param person - объект пользователя
      */
     public static void notifyUser(Person person) {
-        String email = person.getEmail();
+        String email = person.email();
         // Отправляем уведомление
     }
 

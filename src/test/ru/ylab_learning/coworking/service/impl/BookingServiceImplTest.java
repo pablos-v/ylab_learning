@@ -4,15 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.ylab_learning.coworking.domain.dto.BookingDTO;
-import ru.ylab_learning.coworking.domain.dto.ResourceDTO;
-import ru.ylab_learning.coworking.domain.enums.ResourceType;
 import ru.ylab_learning.coworking.domain.exception.BookingNotFoundException;
-import ru.ylab_learning.coworking.domain.exception.ResourceNotFoundException;
 import ru.ylab_learning.coworking.domain.model.Booking;
-import ru.ylab_learning.coworking.domain.model.Booking;
-import ru.ylab_learning.coworking.domain.model.Resource;
 import ru.ylab_learning.coworking.repository.BookingRepository;
-import ru.ylab_learning.coworking.repository.ResourceRepository;
 import ru.ylab_learning.coworking.service.PersonService;
 import ru.ylab_learning.coworking.service.ResourceService;
 
@@ -24,7 +18,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
