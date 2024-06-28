@@ -2,9 +2,9 @@ version: '2.2'
 services:
   db:
     image: postgres:latest
-    container_name: training_diary
+    container_name: coworking
     environment:
-      POSTGRES_DB: training_diary
+      POSTGRES_DB: coworking_db
       POSTGRES_USER: ylab
       POSTGRES_PASSWORD: ylabylab
     ports:

@@ -39,10 +39,11 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
     }
 
     @Override
-    public Booking save(BookingDTO booking) {
+    public Booking save(BookingDTO booking) throws BookingNotFoundException{
         return bookingRepository.save(booking);
     }
-@Override
+
+    @Override
     public Booking getById(Long bookingId) throws BookingNotFoundException{
         return bookingRepository.findById(bookingId).orElseThrow(BookingNotFoundException::new);
     }
@@ -83,10 +84,18 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
 
     @Override
     public void createBooking(Person person) {
-        BookingDTO newBooking = askAndValidate(InputType.USER_BOOKING);
-        newBooking.setPersonId(person.getId());
-        save(newBooking);
-        ConsoleOutput.print("Создано бронирование: " + newBooking);
+        BookingDTO newBooking;
+        while (true) {
+            try {
+                newBooking = askAndValidate(InputType.USER_BOOKING);
+                newBooking.setPersonId(person.getId());
+                save(newBooking);
+                ConsoleOutput.print("Создано бронирование: " + newBooking);
+                return;
+            } catch (BookingNotFoundException e) {
+                ConsoleOutput.print("Ошибка сохранения бронирования. Попробуйте ещё раз.");
+            }
+        }
     }
 
     @Override

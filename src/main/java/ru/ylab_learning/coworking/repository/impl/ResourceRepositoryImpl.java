@@ -25,7 +25,6 @@ public record ResourceRepositoryImpl(String dbUrl, String dbUser, String dbPassw
              PreparedStatement statement = connection.prepareStatement(SQLQueries.FIND_RESOURCE_BY_ID)) {
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
-            // TODO maybe while (resultSet.next()) {
             if (resultSet.next()) {
                 resource = buildResourceFromResultSet(resultSet);
             }

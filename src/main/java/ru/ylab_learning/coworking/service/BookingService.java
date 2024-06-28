@@ -33,8 +33,9 @@ public interface BookingService {
      *
      * @param booking DTO бронирования
      * @return сохранённый объект бронирования
+     * @throws BookingNotFoundException - если бронирование не найдено
      */
-    Booking save(BookingDTO booking);
+    Booking save(BookingDTO booking) throws BookingNotFoundException;
 
     /**
      * Метод создания бронирования администратором. Сначала запрашивает и валидирует параметры бронирования,

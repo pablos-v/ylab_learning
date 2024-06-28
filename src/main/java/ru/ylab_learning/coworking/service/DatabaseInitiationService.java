@@ -16,6 +16,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+
+/**
+ * TODO
+ */
 @Data
 public class DatabaseInitiationService {
     private String dbUrl;

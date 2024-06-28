@@ -25,7 +25,6 @@ public record PersonRepositoryImpl(String dbUrl, String dbUser, String dbPasswor
              PreparedStatement statement = connection.prepareStatement(SQLQueries.FIND_PERSON_BY_LOGIN)) {
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
-            // TODO maybe while (resultSet.next()) {
             if (resultSet.next()) {
                 person = buildPersonFromResultSet(resultSet);
             }
@@ -42,13 +41,12 @@ public record PersonRepositoryImpl(String dbUrl, String dbUser, String dbPasswor
             statement.setString(1, dto.getLogin());
             statement.setString(2, dto.getPassword());
             statement.setString(3, dto.getName());
-            statement.setString(4, "user");
+            statement.setString(4, "USER");
             statement.setString(5, dto.getEmail());
             statement.executeUpdate();
         } catch (SQLException e) {
             ConsoleOutput.print(e.getMessage());
         }
-        // TODO переделать как в resrepo.save() ??
         return findByLogin(dto.getLogin()).orElseThrow(PersonNotFoundException::new);
     }
 
@@ -76,7 +74,6 @@ public record PersonRepositoryImpl(String dbUrl, String dbUser, String dbPasswor
              PreparedStatement statement = connection.prepareStatement(SQLQueries.FIND_PERSON_BY_ID)) {
             statement.setLong(1, personId);
             ResultSet resultSet = statement.executeQuery();
-            // TODO maybe while (resultSet.next()) {
             if (resultSet.next()) {
                 person = buildPersonFromResultSet(resultSet);
             }
