@@ -11,6 +11,7 @@ import ru.ylab_learning.coworking.util.SQLQueries;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,8 +32,8 @@ public class DatabaseInitiationService {
     public DatabaseInitiationService() {
         try {
             Properties prop = new Properties();
-            prop.load(new FileInputStream("resources/config.properties"));
-//            prop.load(new FileInputStream("src/main/resources/config.properties"));
+            InputStream input = DatabaseInitiationService.class.getResourceAsStream("/config.properties");
+            prop.load(input);
             this.dbUrl = prop.getProperty("db.url");
             this.dbUser = prop.getProperty("db.user");
             this.dbPassword = prop.getProperty("db.password");
