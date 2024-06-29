@@ -1,73 +1,141 @@
 package ru.ylab_learning.coworking.repository.impl;
 
 import ru.ylab_learning.coworking.domain.dto.BookingDTO;
+import ru.ylab_learning.coworking.domain.exception.BookingNotFoundException;
 import ru.ylab_learning.coworking.domain.model.Booking;
+import ru.ylab_learning.coworking.out.ConsoleOutput;
 import ru.ylab_learning.coworking.repository.BookingRepository;
+import ru.ylab_learning.coworking.util.SQLQueries;
 
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Реализация репозитория бронирований
  */
-public class BookingRepositoryImpl implements BookingRepository {
-    /**
-     * Хранение в памяти
-     */
-    private final HashMap<Long, Booking> bookings = new HashMap<>();
-
-    // Иницияция данных для теста приложения
-    {
-        Booking bookingOne = new Booking(1L, 2L, LocalDate.of(2024, 6, 25), LocalTime.of(10, 0), LocalTime.of(12, 0));
-        Booking bookingTwo = new Booking(3L, 2L, LocalDate.of(2024, 6, 25), LocalTime.of(13, 0), LocalTime.of(18, 0));
-        Booking bookingThree = new Booking(4L, 2L, LocalDate.of(2024, 6, 26), LocalTime.of(12, 0), LocalTime.of(15, 0));
-        Booking bookingFour = new Booking(6L, 2L, LocalDate.of(2024, 6, 27), LocalTime.of(11, 0), LocalTime.of(23, 0));
-        List.of(bookingOne, bookingTwo, bookingThree, bookingFour)
-                .forEach(it-> bookings.put(it.getId(), it));
-    }
+public record BookingRepositoryImpl(String dbUrl, String dbUser, String dbPassword) implements BookingRepository {
 
     @Override
     public Optional<Booking> findById(Long bookingId) {
-        return Optional.ofNullable(bookings.get(bookingId));
+        Booking booking = null;
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             PreparedStatement statement = connection.prepareStatement(SQLQueries.FIND_BOOKING_BY_ID)) {
+            statement.setLong(1, bookingId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                booking = buildBookingFromResultSet(resultSet);
+            }
+        } catch (SQLException e) {
+            ConsoleOutput.print(e.getMessage());
+        }
+        return Optional.ofNullable(booking);
     }
 
     @Override
-    public void update(Booking original) {
-        bookings.put(original.getId(), original);
+    public void update(Booking b) {
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             PreparedStatement statement = connection.prepareStatement(SQLQueries.UPDATE_BOOKING)) {
+            setValuesOfStatement(statement, b.getDate(), b.getStartTime(),
+                    b.getEndTime(), b.getPersonId(), b.getResourceId());
+            statement.setLong(6, b.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            ConsoleOutput.print(e.getMessage());
+        }
     }
 
     @Override
     public List<Booking> findAllByPersonId(Long id) {
-        return bookings.values().stream().filter(it->it.getPersonId().equals(id)).toList();
-    }
+        List<Booking> bookings = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             PreparedStatement statement = connection.prepareStatement(SQLQueries.FIND_ALL_BOOKINGS_BY_PERSON_ID)) {
+            statement.setLong(1, id);
 
-    @Override
-    public Booking save(BookingDTO dto) {
-        Booking newBooking = new Booking(
-                dto.getResourceId(),
-                dto.getPersonId(),
-                dto.getDate(),
-                dto.getStartTime(),
-                dto.getEndTime()
-        );
-        bookings.put(newBooking.getId(), newBooking);
-        return newBooking;
-    }
-
-    @Override
-    public Optional<Booking> deleteById(Long idRequired) {
-        Optional<Booking> response = findById(idRequired);
-        if (response.isPresent()) {
-            bookings.remove(idRequired);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                Booking booking = buildBookingFromResultSet(resultSet);
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            ConsoleOutput.print(e.getMessage());
         }
-        return response;
+        return bookings;
+    }
+
+    @Override
+    public Booking save(BookingDTO dto) throws BookingNotFoundException {
+        long generatedID = -1;
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             PreparedStatement statement = connection.prepareStatement(SQLQueries.INSERT_BOOKING, Statement.RETURN_GENERATED_KEYS)) {
+            setValuesOfStatement(statement, dto.getDate(), dto.getStartTime(),
+                    dto.getEndTime(), dto.getPersonId(), dto.getResourceId());
+            statement.executeUpdate();
+
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                generatedID = generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            ConsoleOutput.print(e.getMessage());
+        }
+        return findById(generatedID).orElseThrow(BookingNotFoundException::new);
+    }
+
+    @Override
+    public Optional<Booking> deleteById(Long id) {
+        Optional<Booking> booking = findById(id);
+        if (booking.isPresent()) {
+            try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                 PreparedStatement statement = connection.prepareStatement(SQLQueries.DELETE_BOOKING_BY_ID)) {
+                {
+                    statement.setLong(1, id);
+                    statement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                ConsoleOutput.print(e.getMessage());
+            }
+        }
+        return booking;
     }
 
     @Override
     public List<Booking> findAll() {
-        return bookings.values().stream().toList();
+        List<Booking> bookings = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+             Statement statement = connection.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(SQLQueries.FIND_ALL_BOOKINGS);
+            while (resultSet.next()) {
+                Booking booking = buildBookingFromResultSet(resultSet);
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            ConsoleOutput.print(e.getMessage());
+        }
+        return bookings;
+    }
+
+    private void setValuesOfStatement(PreparedStatement statement, LocalDate date,
+            LocalTime startTime, LocalTime endTime, Long personId, Long resourceId) throws SQLException {
+        statement.setDate(1, Date.valueOf(date));
+        statement.setTime(2, Time.valueOf(startTime));
+        statement.setTime(3, Time.valueOf(endTime));
+        statement.setLong(4, personId);
+        statement.setLong(5, resourceId);
+    }
+
+    private Booking buildBookingFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Booking(
+                resultSet.getLong("id"),
+                resultSet.getLong("resource_id"),
+                resultSet.getLong("person_id"),
+                resultSet.getDate("date").toLocalDate(),
+                resultSet.getTime("start_time").toLocalTime(),
+                resultSet.getTime("end_time").toLocalTime()
+        );
     }
 }

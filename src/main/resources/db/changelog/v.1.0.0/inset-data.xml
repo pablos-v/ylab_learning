@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="insert-data" author="pavel_kuzmin">
+        <preConditions onFail="HALT">
+            <tableExists tableName="persons"/>
+            <tableExists tableName="resources"/>
+            <tableExists tableName="bookings"/>
+        </preConditions>
+        <!--        создаём админа для тестов-->
+        <insert schemaName="entities" tableName="persons">
+            <column name="name" value="Администратор"/>
+            <column name="login" value="admin"/>
+            <column name="password" value="password"/>
+            <column name="email" value="admin@coworking.ru"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+        <!--        создаём первого пользователя для тестов-->
+        <insert schemaName="entities" tableName="persons">
+            <column name="name" value="Пользователь"/>
+            <column name="login" value="user"/>
+            <column name="password" value="password"/>
+            <column name="email" value="user@coworking.ru"/>
+            <column name="role" value="USER"/>
+        </insert>
+        <!--        создаём ресурсы для тестов-->
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="MEETING_ROOM"/>
+            <column name="description" value="Большой зал"/>
+            <column name="rent_price" value="500"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="MEETING_ROOM"/>
+            <column name="description" value="Малый зал"/>
+            <column name="rent_price" value="400"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="WORKPLACE"/>
+            <column name="description" value="Комфорт"/>
+            <column name="rent_price" value="200"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="WORKPLACE"/>
+            <column name="description" value="Комфорт"/>
+            <column name="rent_price" value="200"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="WORKPLACE"/>
+            <column name="description" value="Комфорт видовой"/>
+            <column name="rent_price" value="250"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="WORKPLACE"/>
+            <column name="description" value="Комфорт+ с принтером"/>
+            <column name="rent_price" value="300"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert schemaName="entities" tableName="resources">
+            <column name="type" value="WORKPLACE"/>
+            <column name="description" value="Комфорт+ с принтером"/>
+            <column name="rent_price" value="300"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <!--        создаём бронирования для тестов-->
+        <insert schemaName="entities" tableName="bookings">
+            <column name="date" value="2024-06-25"/>
+            <column name="start_time" value="10:00"/>
+            <column name="end_time" value="12:00"/>
+            <column name="resource_id" value="1"/>
+            <column name="person_id" value="2"/>
+        </insert>
+        <insert schemaName="entities" tableName="bookings">
+            <column name="date" value="2024-06-25"/>
+            <column name="start_time" value="13:00"/>
+            <column name="end_time" value="18:00"/>
+            <column name="resource_id" value="3"/>
+            <column name="person_id" value="2"/>
+        </insert>
+        <insert schemaName="entities" tableName="bookings">
+            <column name="date" value="2024-06-26"/>
+            <column name="start_time" value="12:00"/>
+            <column name="end_time" value="15:00"/>
+            <column name="resource_id" value="4"/>
+            <column name="person_id" value="2"/>
+        </insert>
+        <insert schemaName="entities" tableName="bookings">
+            <column name="date" value="2024-06-27"/>
+            <column name="start_time" value="11:00"/>
+            <column name="end_time" value="23:00"/>
+            <column name="resource_id" value="6"/>
+            <column name="person_id" value="2"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

@@ -1,6 +1,7 @@
 package ru.ylab_learning.coworking;
 
 import ru.ylab_learning.coworking.controller.ConsoleMenuController;
+import ru.ylab_learning.coworking.service.DatabaseInitiationService;
 
 /**
  * Точка входа.
@@ -8,8 +9,10 @@ import ru.ylab_learning.coworking.controller.ConsoleMenuController;
 public class App {
     public static void main(String[] args) {
 
-        ConsoleMenuController console = ConsoleMenuController.build();
+        DatabaseInitiationService DBInitializer = new DatabaseInitiationService();
+        DBInitializer.InitiateDatabaseWithLiquibase();
 
+        ConsoleMenuController console = ConsoleMenuController.build(DBInitializer);
         console.startMenu();
     }
 }

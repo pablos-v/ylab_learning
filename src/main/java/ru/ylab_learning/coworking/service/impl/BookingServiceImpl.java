@@ -39,10 +39,11 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
     }
 
     @Override
-    public Booking save(BookingDTO booking) {
+    public Booking save(BookingDTO booking) throws BookingNotFoundException{
         return bookingRepository.save(booking);
     }
-@Override
+
+    @Override
     public Booking getById(Long bookingId) throws BookingNotFoundException{
         return bookingRepository.findById(bookingId).orElseThrow(BookingNotFoundException::new);
     }
@@ -69,17 +70,32 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
 
     @Override
     public void createBooking() {
-        BookingDTO newBooking = askAndValidate(InputType.ADMIN_NEW_BOOKING);
-        ConsoleOutput.print("Добавлено бронирование: " + save(newBooking));
-        Util.notifyUser(personService.getPersonById(newBooking.getPersonId()));
+        while (true) {
+            try {
+                BookingDTO newBooking = askAndValidate(InputType.ADMIN_NEW_BOOKING);
+                ConsoleOutput.print("Добавлено бронирование: " + save(newBooking));
+                Util.notifyUser(personService.getPersonById(newBooking.getPersonId()));
+                return;
+            } catch (BookingNotFoundException e) {
+                ConsoleOutput.print("Ошибка сохранения бронирования. Попробуйте ещё раз.");
+            }
+        }
     }
 
     @Override
     public void createBooking(Person person) {
-        BookingDTO newBooking = askAndValidate(InputType.USER_BOOKING);
-        newBooking.setPersonId(person.getId());
-        save(newBooking);
-        ConsoleOutput.print("Создано бронирование: " + newBooking);
+        BookingDTO newBooking;
+        while (true) {
+            try {
+                newBooking = askAndValidate(InputType.USER_BOOKING);
+                newBooking.setPersonId(person.id());
+                save(newBooking);
+                ConsoleOutput.print("Создано бронирование: " + newBooking);
+                return;
+            } catch (BookingNotFoundException e) {
+                ConsoleOutput.print("Ошибка сохранения бронирования. Попробуйте ещё раз.");
+            }
+        }
     }
 
     @Override
@@ -128,6 +144,11 @@ public record BookingServiceImpl(BookingRepository bookingRepository, PersonServ
                 // проверка, что время начала и окончания не совпадают и идут хронологически
                 if (!booking.getEndTime().isAfter(booking.getStartTime())) {
                     ConsoleOutput.print("Время окончания должно быть позже времени начала");
+                    continue;
+                }
+                // проверка на активность ресурса
+                if (!resourceService.getById(booking.getResourceId()).isActive()) {
+                    ConsoleOutput.print("Объект закрыт на ремонт, выберите другой");
                     continue;
                 }
             } catch (NumberFormatException e) {

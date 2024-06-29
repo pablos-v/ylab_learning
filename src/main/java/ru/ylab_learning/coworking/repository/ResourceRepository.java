@@ -1,6 +1,7 @@
 package ru.ylab_learning.coworking.repository;
 
 import ru.ylab_learning.coworking.domain.dto.ResourceDTO;
+import ru.ylab_learning.coworking.domain.exception.ResourceNotFoundException;
 import ru.ylab_learning.coworking.domain.model.Resource;
 
 import java.util.List;
@@ -21,10 +22,10 @@ public interface ResourceRepository {
     /**
      * Метод удаления ресурса по его ID
      *
-     * @param idRequired ID ресурса
+     * @param id ID ресурса
      * @return удалённый ресурс в виде Optional<Resource>
      */
-    Optional<Resource> deleteById(Long idRequired);
+    Optional<Resource> deleteById(Long id);
 
     /**
      * Метод сохранения нового ресурса, сначала создаёт новый объект ресурса на основе DTO.
@@ -32,8 +33,9 @@ public interface ResourceRepository {
      *
      * @param dto DTO объекта ресурса
      * @return созданный ресурс
+     * @throws ResourceNotFoundException если ресурс не найден в БД после сохранения
      */
-    Resource save(ResourceDTO dto);
+    Resource save(ResourceDTO dto) throws ResourceNotFoundException;
 
     /**
      * Метод изменения ресурса

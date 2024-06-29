@@ -13,6 +13,7 @@ import ru.ylab_learning.coworking.repository.impl.BookingRepositoryImpl;
 import ru.ylab_learning.coworking.repository.impl.PersonRepositoryImpl;
 import ru.ylab_learning.coworking.repository.impl.ResourceRepositoryImpl;
 import ru.ylab_learning.coworking.service.BookingService;
+import ru.ylab_learning.coworking.service.DatabaseInitiationService;
 import ru.ylab_learning.coworking.service.PersonService;
 import ru.ylab_learning.coworking.service.ResourceService;
 import ru.ylab_learning.coworking.service.impl.BookingServiceImpl;
@@ -31,13 +32,16 @@ import java.util.List;
  */
 public record ConsoleMenuController(PersonService personService, BookingService bookingService, ResourceService resourceService) {
     /**
-     * Инициализатор контроллера консольного меню
-     * @return инициализированный контроллер
+     * Инициализатор базы данных и контроллера консольного меню
+     * @return инициализированный контроллер с подключением к БД
      */
-    public static ConsoleMenuController build() {
-        PersonRepository personRepository = new PersonRepositoryImpl();
-        BookingRepository bookingRepository = new BookingRepositoryImpl();
-        ResourceRepository resourceRepository = new ResourceRepositoryImpl();
+    public static ConsoleMenuController build(DatabaseInitiationService init) {
+        PersonRepository personRepository = new PersonRepositoryImpl(init.getDbUrl(), init.getDbUser(),
+                init.getDbPassword());
+        BookingRepository bookingRepository = new BookingRepositoryImpl(init.getDbUrl(), init.getDbUser(),
+                init.getDbPassword());
+        ResourceRepository resourceRepository = new ResourceRepositoryImpl(init.getDbUrl(), init.getDbUser(),
+                init.getDbPassword());
 
         PersonService personService = new PersonServiceImpl(personRepository);
         ResourceService resourceService = new ResourceServiceImpl(resourceRepository);
@@ -72,7 +76,7 @@ public record ConsoleMenuController(PersonService personService, BookingService 
      * @param person объект пользователя
      */
     private void mainMenu(Person person) {
-        if (person.getRole().equals(PersonRole.ADMIN)) {
+        if (person.role().equals(PersonRole.ADMIN)) {
             adminMainMenu();
         } else {
             userMainMenu(person);
@@ -150,11 +154,11 @@ public record ConsoleMenuController(PersonService personService, BookingService 
         while (true) {
             int choice = Util.askNumberForMenu(MenuValues.USER_MENU);
             switch (choice) {
-                case 1 -> ConsoleOutput.printList(bookingService.getAllBookingsByPersonId(person.getId()));
+                case 1 -> ConsoleOutput.printList(bookingService.getAllBookingsByPersonId(person.id()));
                 case 2 -> ConsoleOutput.printList(resourceService.getAllResources());
                 case 3 -> {
                     LocalDate date = ConsoleInput.dateInput();
-                    List<Booking> userBookings = bookingService.getAllBookingsByPersonId(person.getId());
+                    List<Booking> userBookings = bookingService.getAllBookingsByPersonId(person.id());
                     ConsoleOutput.printList(Util.getAvailableSlots(resourceService.getAllResources(), date, userBookings));
                 }
                 case 4 -> bookingService.createBooking(person);

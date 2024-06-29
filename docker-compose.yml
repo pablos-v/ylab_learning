@@ -1,0 +1,12 @@
+version: '2.2'
+services:
+  db:
+    image: postgres:14.7-alpine
+    container_name: coworking_db
+    environment:
+      POSTGRES_DB: coworking
+      POSTGRES_USER: ylab
+      POSTGRES_PASSWORD: ylabylab
+    ports:
+      - "5435:5432"
+    restart: always

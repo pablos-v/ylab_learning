@@ -44,7 +44,7 @@ public class Util {
      * @param person - объект пользователя
      */
     public static void notifyUser(Person person) {
-        String email = person.getEmail();
+        String email = person.email();
         // Отправляем уведомление
     }
 
@@ -55,7 +55,8 @@ public class Util {
      * @param bookings - список имеющихся бронирований
      * @return список свободных слотов
      */
-    public static List<Slot> getAvailableSlots(List<Resource> resources, LocalDate date, List<Booking> bookings) {
+    public static List<Slot> getAvailableSlots(List<Resource> resources, LocalDate date,
+            List<Booking> bookings) {
         List<Slot> availableSlots = new ArrayList<>();
 
         for (Resource resource : resources) {
@@ -67,7 +68,8 @@ public class Util {
 
                 // Проверяем, не пересекается ли текущий слот с занятыми слотами
                 if (!hasConflicts(date, bookings, startTime, endTime)) {
-                    availableSlots.add(new Slot(resource.getId(), resource.getType(), resource.getDescription(), startTime, endTime));
+                    availableSlots.add(new Slot(resource.getId(), resource.getType(),
+                            resource.getDescription(), startTime, endTime));
                 }
             }
         }
@@ -82,7 +84,8 @@ public class Util {
      * @param endTime - время окончания
      * @return true если есть пересечение
      */
-    public static boolean hasConflicts(LocalDate date, List<Booking> bookings, LocalTime startTime, LocalTime endTime) {
+    public static boolean hasConflicts(LocalDate date, List<Booking> bookings, LocalTime startTime,
+            LocalTime endTime) {
         return bookings.stream()
                 .filter(booking -> booking.getDate().equals(date))
                 .anyMatch(booking ->

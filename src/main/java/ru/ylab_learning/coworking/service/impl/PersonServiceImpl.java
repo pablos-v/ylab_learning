@@ -28,7 +28,7 @@ public record PersonServiceImpl(PersonRepository repository) implements PersonSe
                 String login = credentials[0];
                 String password = credentials[1];
                 Person person = repository.findByLogin(login).orElseThrow(PersonNotFoundException::new);
-                if ((person.getPassword().equals(password))) {
+                if ((person.password().equals(password))) {
                     return person;
                 }
                 ConsoleOutput.print("Пароль не подходит!");
@@ -56,20 +56,22 @@ public record PersonServiceImpl(PersonRepository repository) implements PersonSe
                     throw new WrongEmailException();
                 }
                 Person savedPerson = save(newPerson);
-                ConsoleOutput.print("Добавлен пользователь " + savedPerson.getName() + " с логином " +
-                        savedPerson.getLogin() + " и ID " + savedPerson.getId() + "\n-------------------------\n");
+                ConsoleOutput.print("Добавлен пользователь " + savedPerson.name() + " с логином " +
+                        savedPerson.login() + " и ID " + savedPerson.id() + "\n-------------------------\n");
                 return;
             } catch (PersonExistsException e) {
                 ConsoleOutput.print("Пользователь с логином " + newPerson.getLogin() +
                         " уже существует! \nПопробуйте снова.");
             } catch (WrongEmailException e) {
                 ConsoleOutput.print("Неправильный email. Попробуйте снова.");
+            } catch (PersonNotFoundException e){
+                ConsoleOutput.print("Ошибка сохранения пользователя в БД. Попробуйте снова.");
             }
         }
     }
 
     @Override
-    public Person save(PersonDTO person) {
+    public Person save(PersonDTO person) throws PersonNotFoundException{
         return repository.save(person);
     }
 
@@ -81,7 +83,7 @@ public record PersonServiceImpl(PersonRepository repository) implements PersonSe
     @Override
     public Long getMaxId() throws PersonNotFoundException{
         return getAllPersons().stream()
-                .mapToLong(Person::getId)
+                .mapToLong(Person::id)
                 .max().orElseThrow(PersonNotFoundException::new);
     }
 

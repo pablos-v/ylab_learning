@@ -1,6 +1,7 @@
 package ru.ylab_learning.coworking.repository;
 
 import ru.ylab_learning.coworking.domain.dto.PersonDTO;
+import ru.ylab_learning.coworking.domain.exception.PersonNotFoundException;
 import ru.ylab_learning.coworking.domain.model.Person;
 
 import java.util.List;
@@ -26,8 +27,9 @@ public interface PersonRepository {
      *
      * @param dto DTO пользователя
      * @return созданного пользователя
+     * @throws PersonNotFoundException если после сохранения пользователя не существует в БД
      */
-    Person save(PersonDTO dto);
+    Person save(PersonDTO dto) throws PersonNotFoundException;
 
     /**
      * Метод поиска всех пользователей.
