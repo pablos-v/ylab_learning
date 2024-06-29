@@ -4,12 +4,9 @@ services:
     image: postgres:14.7-alpine
     container_name: coworking_db
     environment:
-      POSTGRES_DB: "coworking"
-      POSTGRES_USER: "ylab"
-      POSTGRES_PASSWORD: "ylabylab"
+      POSTGRES_DB: coworking
+      POSTGRES_USER: ylab
+      POSTGRES_PASSWORD: ylabylab
     ports:
-      - "5432:5432"
-#    volumes:
-#      # инициация БД
-#      - ./create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
+      - "5435:5432"
     restart: always

@@ -31,7 +31,8 @@ public class DatabaseInitiationService {
     public DatabaseInitiationService() {
         try {
             Properties prop = new Properties();
-            prop.load(new FileInputStream("src/main/resources/config.properties"));
+            prop.load(new FileInputStream("resources/config.properties"));
+//            prop.load(new FileInputStream("src/main/resources/config.properties"));
             this.dbUrl = prop.getProperty("db.url");
             this.dbUser = prop.getProperty("db.user");
             this.dbPassword = prop.getProperty("db.password");
